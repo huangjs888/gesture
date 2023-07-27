@@ -1,6 +1,6 @@
 {
   "name": "@huangjs888/gesture",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "gesture event",
   "main": "src/index",
   "source": "src/index",
