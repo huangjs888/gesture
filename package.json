@@ -1,6 +1,6 @@
 {
   "name": "@huangjs888/gesture",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "gesture event",
   "main": "lib/index.js",
   "unpkg": "dist/gesture.min.js",
