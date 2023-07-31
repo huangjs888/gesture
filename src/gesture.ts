@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-02-13 15:22:58
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-07-26 16:28:18
+ * @LastEditTime: 2023-07-31 15:50:00
  * @Description: ******
  */
 
@@ -37,6 +37,9 @@ function touchstarted(this: Gesture, event: TouchEvent) {
     currentTarget: this.element,
     sourceEvent: event,
     timestamp: Date.now(),
+    startPoint: [0, 0],
+    movePoint: [0, 0],
+    endPoint: [0, 0],
     point: [0, 0],
     toucheIds: [],
   };
@@ -79,13 +82,20 @@ function touchstarted(this: Gesture, event: TouchEvent) {
   if (this._touch1 && this._touch0) {
     newEvent.toucheIds.push(this._touch0[3][0], this._touch1[3][0]);
     this._firstPoint = null;
-    newEvent.point = getCenter(this._touch0[0], this._touch1[0]);
+    const point = getCenter(this._touch0[0], this._touch1[0]);
+    newEvent.startPoint = point;
+    newEvent.movePoint = point;
+    newEvent.endPoint = point;
+    newEvent.point = newEvent.startPoint;
     this.emit('gestureStart', newEvent);
   }
   // 单指start
   else if (this._touch0) {
     newEvent.toucheIds.push(this._touch0[3][0]);
-    newEvent.point = this._touch0[0];
+    newEvent.startPoint = this._touch0[0];
+    newEvent.movePoint = this._touch0[1];
+    newEvent.endPoint = this._touch0[2];
+    newEvent.point = newEvent.startPoint;
     this._preventTap = false;
     // 设置一个长按定时器
     this._longTapTimer = window.setTimeout(() => {
@@ -111,7 +121,10 @@ function touchstarted(this: Gesture, event: TouchEvent) {
       this._singleTapTimer = null;
       this._preventSingleTap = true;
       this._preventDoubleTap = false;
-      newEvent.point = this._firstPoint;
+      newEvent.startPoint = this._firstPoint;
+      newEvent.movePoint = this._firstPoint;
+      newEvent.endPoint = this._firstPoint;
+      newEvent.point = newEvent.startPoint;
     } else {
       this._firstPoint = this._touch0[0];
       // 表示是第一次点击或该次点击距离上一次点击时间超过doubleTapInterval，距离超过doubleTapDistance
@@ -137,6 +150,9 @@ function touchmoved(this: Gesture, event: TouchEvent) {
     currentTarget: this.element,
     sourceEvent: event,
     timestamp: Date.now(),
+    startPoint: [0, 0],
+    movePoint: [0, 0],
+    endPoint: [0, 0],
     point: [0, 0],
     toucheIds: [],
   };
@@ -175,7 +191,10 @@ function touchmoved(this: Gesture, event: TouchEvent) {
       const eCenter = getCenter(this._touch0[2], this._touch1[2]);
       const mCenter = getCenter(this._touch0[1], this._touch1[1]);
       const sCenter = getCenter(this._touch0[0], this._touch1[0]);
-      newEvent.point = eCenter;
+      newEvent.startPoint = sCenter;
+      newEvent.movePoint = mCenter;
+      newEvent.endPoint = eCenter;
+      newEvent.point = newEvent.endPoint;
       newEvent.direction = getDirection(mCenter, eCenter);
       newEvent.moveDirection = getDirection(sCenter, eCenter);
       newEvent.deltaX = eCenter[0] - mCenter[0];
@@ -240,7 +259,10 @@ function touchmoved(this: Gesture, event: TouchEvent) {
         timestamp: _timestamp,
       });
       this._swipePoints = _swipePoints;
-      newEvent.point = this._touch0[2];
+      newEvent.startPoint = this._touch0[0];
+      newEvent.movePoint = this._touch0[1];
+      newEvent.endPoint = this._touch0[2];
+      newEvent.point = newEvent.endPoint;
       newEvent.direction = getDirection(this._touch0[1], this._touch0[2]);
       newEvent.moveDirection = getDirection(this._touch0[0], this._touch0[2]);
       newEvent.deltaX = this._touch0[2][0] - this._touch0[1][0];
@@ -268,6 +290,9 @@ function touchended(this: Gesture, event: TouchEvent) {
     currentTarget: this.element,
     sourceEvent: event,
     timestamp: Date.now(),
+    startPoint: [0, 0],
+    movePoint: [0, 0],
+    endPoint: [0, 0],
     point: [0, 0],
     toucheIds: [],
   };
@@ -300,15 +325,27 @@ function touchended(this: Gesture, event: TouchEvent) {
   // 仍然存在至少一根手指
   if (this._touch0) {
     newEvent.toucheIds.push(this._touch0[3][0]);
-    newEvent.point = getCenter(
+    newEvent.startPoint = getCenter(
+      this._touch0[0],
+      this._touch1 ? this._touch1[0] : touch1 ? touch1[0] : [],
+    );
+    newEvent.movePoint = getCenter(
+      this._touch0[1],
+      this._touch1 ? this._touch1[1] : touch1 ? touch1[1] : [],
+    );
+    newEvent.endPoint = getCenter(
       this._touch0[2],
       this._touch1 ? this._touch1[2] : touch1 ? touch1[2] : [],
     );
+    newEvent.point = newEvent.endPoint;
     this.emit('gestureEnd', newEvent);
   }
   // 全部拿开（双指同时抬起，最后一指抬起，仅仅一指抬起）
   else if (touch0) {
-    newEvent.point = touch1 ? getCenter(touch0[2], touch1[2]) : touch0[2];
+    newEvent.startPoint = touch1 ? getCenter(touch0[0], touch1[0]) : touch0[0];
+    newEvent.movePoint = touch1 ? getCenter(touch0[1], touch1[1]) : touch0[1];
+    newEvent.endPoint = touch1 ? getCenter(touch0[2], touch1[2]) : touch0[2];
+    newEvent.point = newEvent.endPoint;
     if (!this._preventTap) {
       this.emit('tap', newEvent);
     }
@@ -323,7 +360,10 @@ function touchended(this: Gesture, event: TouchEvent) {
     if (!this._preventDoubleTap) {
       // 双击点使用第一次的点
       if (this._firstPoint) {
-        newEvent.point = this._firstPoint;
+        newEvent.startPoint = this._firstPoint;
+        newEvent.movePoint = this._firstPoint;
+        newEvent.endPoint = this._firstPoint;
+        newEvent.point = newEvent.endPoint;
       }
       newEvent.intervalTime = this.doubleTapInterval;
       this.emit('doubleTap', newEvent);
@@ -401,7 +441,10 @@ function touchended(this: Gesture, event: TouchEvent) {
     // 双指抬起，只剩下一指，此时就认为该点是移动的起点（否则会把双指移动的起点作为起点，移动时会出现跳跃）
     this._touch0[0] = this._touch0[1] = this._touch0[2];
     // 同时可以触发一次start事件
-    newEvent.point = this._touch0[0];
+    newEvent.startPoint = this._touch0[0];
+    newEvent.movePoint = this._touch0[1];
+    newEvent.endPoint = this._touch0[2];
+    newEvent.point = newEvent.startPoint;
     this.emit('touchStart', newEvent);
   } */
 }
@@ -412,6 +455,9 @@ function touchcanceled(this: Gesture, event: TouchEvent) {
     currentTarget: this.element,
     sourceEvent: event,
     timestamp: Date.now(),
+    startPoint: [],
+    movePoint: [],
+    endPoint: [],
     point: [],
     toucheIds: [],
   });
@@ -478,8 +524,8 @@ class Gesture extends EventTarget<GType, GEvent> {
       swipeDuration,
       raiseDuration,
     } = options || {};
-    this.longTapInterval = fixOption(longTapInterval, 750, 500);
-    this.doubleTapInterval = fixOption(doubleTapInterval, 250, 200);
+    this.longTapInterval = fixOption(longTapInterval, 750, 1);
+    this.doubleTapInterval = fixOption(doubleTapInterval, 250, 1);
     this.doubleTapDistance = fixOption(doubleTapDistance, 30, 1);
     this.touchMoveDistance = fixOption(touchMoveDistance, 3, 0);
     this.swipeVelocity = fixOption(swipeVelocity, 0.3, 0);
@@ -555,6 +601,9 @@ export type GEvent = {
   sourceEvent: TouchEvent;
   timestamp: number;
   toucheIds: number[]; // 当前触摸点ID
+  startPoint: number[]; // 事件的起点，如果多个点（两个），取中心点
+  movePoint: number[]; // 事件移动点，如果多个点（两个），取中心点
+  endPoint: number[]; // 事件终点或当前点，如果多个点（两个），取中心点
   point: number[]; // 当前事件变化的点，如果多个点（两个），取中心点
   scale?: number; // 移动的缩放比例（和上一个点比较）
   angle?: number; // 移动的旋转角度（和上一个点比较）swipe角度
