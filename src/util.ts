@@ -2,9 +2,17 @@
  * @Author: Huangjs
  * @Date: 2023-02-13 15:22:58
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-06-20 10:49:25
+ * @LastEditTime: 2023-08-03 10:22:42
  * @Description: ******
  */
+
+const isCurrentTarget = (target: HTMLElement, currentTarget: HTMLElement) => {
+  let _target: HTMLElement | null = target;
+  while (_target && _target !== currentTarget) {
+    _target = _target.parentNode as HTMLElement;
+  }
+  return !!_target;
+};
 
 export function fixOption(
   value: number | undefined,
@@ -19,6 +27,34 @@ export function isTouchable(ele: HTMLElement) {
     return false;
   }
   return navigator.maxTouchPoints || 'ontouchstart' in ele;
+}
+
+export function getEventPoints(
+  event: TouchEvent | MouseEvent,
+  started: boolean = false,
+): {
+  points: TouchList | { pageX: number; pageY: number; identifier: number }[];
+  isFirst?: boolean;
+} {
+  if (event instanceof TouchEvent) {
+    if (started) {
+      const touches = Array.prototype.filter.call(event.touches, (t) =>
+        isCurrentTarget(
+          t.target as HTMLElement,
+          event.currentTarget as HTMLElement,
+        ),
+      );
+      return {
+        points: touches,
+        isFirst: event.changedTouches.length === touches.length,
+      };
+    }
+    return { points: event.changedTouches };
+  }
+  return {
+    points: [{ pageX: event.pageX, pageY: event.pageY, identifier: -1 }],
+    isFirst: started,
+  };
 }
 
 export function getDistance([x0, y0]: number[], [x1, y1]: number[]) {
