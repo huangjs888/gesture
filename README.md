@@ -2,27 +2,27 @@
  * @Author: Huangjs
  * @Date: 2021-05-10 15:55:29
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-07-27 10:25:32
+ * @LastEditTime: 2023-08-04 16:36:25
  * @Description: ******
 -->
 ## Gesture
 简单的移动端手势，支持事件：
-'pan' // 单指平移
-'tap' // 单指轻点（快，双击时会触发）
-'swipe' // 单指快速滑动
-'singleTap' // 单指点击（有延迟，双击时不触发）
-'longTap' // 单指长按
-'doubleTap' // 单指双击
-'multiPan' // 双指平移
-'pinch' // 双指拿捏
-'rotate' // 双指旋转
-'touchStart' // 触摸开始
-'touchMove' // 触摸移动
-'touchEnd' // 触摸抬起
-'touchCancel' // 触摸取消
-'gestureStart' // 双（多）指开始
-'gestureMove' // 双（多）指移动
-'gestureEnd'; // 双（多）指结束
+  | 'pan' // 平移
+  | 'tap' // 轻点（快，双击时会触发）
+  | 'swipe' // 快速滑动
+  | 'singleTap' // 点击（有延迟，双击时不触发）
+  | 'longTap' // 长按
+  | 'doubleTap' // 双击
+  | 'multiPan' // 平移
+  | 'scale' // 缩放
+  | 'rotate' // 旋转
+  | 'pointerStart' // 开始
+  | 'pointerMove' // 移动
+  | 'pointerEnd' // 抬起
+  | 'pointerCancel' // 触摸取消
+  | 'gestureStart' // 双（多）指开始
+  | 'gestureMove' // 双（多）指移动
+  | 'gestureEnd'; // 双（多）指结束
 
 ### 使用方法
 ```javascript
@@ -32,16 +32,16 @@ import Gesture, { type GEvent } from '@huangjs888/gesture';
 const gesture = new Gesture(document.body);
 if (gesture.done()) {
   gesture.on('tap', (e: GEvent) => {
-    console.log(e.point);
+    console.log(e.getPoint());
   });
   gesture.on('singleTap', (e) => {
-    console.log(e.point, e.delayTime);
+    console.log(e.getPoint(), e.delayTime);
   });
   gesture.on('doubleTap', (e) => {
-    console.log(e.point, e.intervalTime);
+    console.log(e.getPoint(), e.intervalTime);
   });
   gesture.on('longTap', (e) => {
-    console.log(e.point, e.waitTime);
+    console.log(e.getPoint(), e.waitTime);
   });
   gesture.on('pan', (e) => {
     console.log(
@@ -63,7 +63,7 @@ if (gesture.done()) {
       e.moveY,
     );
   });
-  gesture.on('pinch', (e) => {
+  gesture.on('scale', (e) => {
     console.log(e.scale, e.moveScale);
   });
   gesture.on('rotate', (e) => {
