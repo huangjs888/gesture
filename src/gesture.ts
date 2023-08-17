@@ -110,8 +110,7 @@ function started(this: Gesture, event: TouchEvent | MouseEvent) {
     if (
       singleTapTimer &&
       firstPointer &&
-      getDistance(firstPointer.current, pointer0.current) <
-        this.doubleTapDistance
+      getDistance(firstPointer.current, pointer0.current) < this.doubleTapDistance
     ) {
       // 1，只要连续两次点击时间在doubleTapInterval之内，距离在doubleTapDistance内，无论第二次作何操作，都不会触发第一次的singleTap，但第一次的tap会触发
       // 2，如果满足第一条时，第二次的点击有多根手指（点），或者长按触发longTap，则不会再触发doubleTap，第二次的tap，singleTap也不会触发
@@ -174,10 +173,8 @@ function moved(this: Gesture, event: TouchEvent | MouseEvent) {
   const pointer0 = this._pointer0;
   const pointer1 = this._pointer1;
   if (
-    (pointer0 &&
-      getDistance(pointer0.start, pointer0.current) > this.touchMoveDistance) ||
-    (pointer1 &&
-      getDistance(pointer1.start, pointer1.current) > this.touchMoveDistance)
+    (pointer0 && getDistance(pointer0.start, pointer0.current) > this.touchMoveDistance) ||
+    (pointer1 && getDistance(pointer1.start, pointer1.current) > this.touchMoveDistance)
   ) {
     // 一旦移动，则阻止所有单指点击相关事件（除了swipe）
     this._preventTap = true;
@@ -191,26 +188,14 @@ function moved(this: Gesture, event: TouchEvent | MouseEvent) {
     // 双指移动情况
     if (pointer1 && pointer0) {
       newEvent.pointers = [pointer0, pointer1];
-      const {
-        start: start0,
-        previous: previous0,
-        current: current0,
-      } = pointer0;
-      const {
-        start: start1,
-        previous: previous1,
-        current: current1,
-      } = pointer1;
+      const { start: start0, previous: previous0, current: current0 } = pointer0;
+      const { start: start1, previous: previous1, current: current1 } = pointer1;
       // 双指平移
       const eCenter = getCenter(current0, current1);
       const mCenter = getCenter(previous0, previous1);
       const sCenter = getCenter(start0, start1);
       newEvent.getPoint = (whichOne) =>
-        whichOne === 'start'
-          ? sCenter
-          : whichOne === 'previous'
-          ? mCenter
-          : eCenter;
+        whichOne === 'start' ? sCenter : whichOne === 'previous' ? mCenter : eCenter;
       newEvent.direction = getDirection(mCenter, eCenter);
       newEvent.moveDirection = getDirection(sCenter, eCenter);
       newEvent.deltaX = eCenter[0] - mCenter[0];
@@ -259,11 +244,7 @@ function moved(this: Gesture, event: TouchEvent | MouseEvent) {
       newEvent.pointers = [pointer0];
       const { start, previous, current } = pointer0;
       newEvent.getPoint = (whichOne) =>
-        whichOne === 'start'
-          ? start
-          : whichOne === 'previous'
-          ? previous
-          : current;
+        whichOne === 'start' ? start : whichOne === 'previous' ? previous : current;
       newEvent.direction = getDirection(previous, current);
       newEvent.moveDirection = getDirection(start, current);
       newEvent.deltaX = current[0] - previous[0];
@@ -273,9 +254,7 @@ function moved(this: Gesture, event: TouchEvent | MouseEvent) {
       const _timestamp = Date.now();
       // 第一次移动this._swipePoints为null
       const _swipePoints = this._swipePoints || [[], []];
-      const _duration =
-        _timestamp -
-        ((_swipePoints[1][0] ? _swipePoints[1][0].timestamp : 0) || 0);
+      const _duration = _timestamp - ((_swipePoints[1][0] ? _swipePoints[1][0].timestamp : 0) || 0);
       // 当前时间与本阶段初始时间之差大于计入swipe的时间(swipeDuration)，则本阶段过时，下阶段开启
       if (_duration > this.swipeDuration) {
         // 将本阶段作为上一阶段，开启下一阶段作为本阶段
@@ -363,26 +342,14 @@ function ended(this: Gesture, event: TouchEvent | MouseEvent) {
     );
     const previous = getCenter(
       this._pointer0.previous,
-      this._pointer1
-        ? this._pointer1.previous
-        : pointer1
-        ? pointer1.previous
-        : [],
+      this._pointer1 ? this._pointer1.previous : pointer1 ? pointer1.previous : [],
     );
     const current = getCenter(
       this._pointer0.current,
-      this._pointer1
-        ? this._pointer1.current
-        : pointer1
-        ? pointer1.current
-        : [],
+      this._pointer1 ? this._pointer1.current : pointer1 ? pointer1.current : [],
     );
     newEvent.getPoint = (whichOne) =>
-      whichOne === 'start'
-        ? start
-        : whichOne === 'previous'
-        ? previous
-        : current;
+      whichOne === 'start' ? start : whichOne === 'previous' ? previous : current;
     this.emit('gestureEnd', newEvent);
   }
   // 全部拿开
@@ -393,21 +360,11 @@ function ended(this: Gesture, event: TouchEvent | MouseEvent) {
       // 双指同时抬起
       newEvent.leavePointers.push(pointer1);
     }
-    const start = pointer1
-      ? getCenter(pointer0.start, pointer1.start)
-      : pointer0.start;
-    const previous = pointer1
-      ? getCenter(pointer0.previous, pointer1.previous)
-      : pointer0.previous;
-    const current = pointer1
-      ? getCenter(pointer0.current, pointer1.current)
-      : pointer0.current;
+    const start = pointer1 ? getCenter(pointer0.start, pointer1.start) : pointer0.start;
+    const previous = pointer1 ? getCenter(pointer0.previous, pointer1.previous) : pointer0.previous;
+    const current = pointer1 ? getCenter(pointer0.current, pointer1.current) : pointer0.current;
     newEvent.getPoint = (whichOne) =>
-      whichOne === 'start'
-        ? start
-        : whichOne === 'previous'
-        ? previous
-        : current;
+      whichOne === 'start' ? start : whichOne === 'previous' ? previous : current;
     if (!this._preventTap) {
       this.emit('tap', newEvent);
     }
@@ -463,10 +420,7 @@ function ended(this: Gesture, event: TouchEvent | MouseEvent) {
           // 减速度某个时间的位移：s = v0 * t - (a * t * t) / 2
           // 减速度某个时间的速度：v = v0 - a * t
           // s为滑动距离，v末速度为0，v0初速度为velocity
-          newEvent.swipeComputed = (
-            factor: number,
-            _velocity: number = velocity,
-          ) => {
+          newEvent.swipeComputed = (factor: number, _velocity: number = velocity) => {
             // 因子大于1可以认为传入的是时间毫秒数
             let duration = 0;
             let deceleration = 0;
@@ -596,11 +550,7 @@ function downed(this: Gesture, event: MouseEvent) {
         newEvent.pointers = [that._pointer0];
         const { start, previous, current } = that._pointer0;
         newEvent.getPoint = (whichOne) =>
-          whichOne === 'start'
-            ? start
-            : whichOne === 'previous'
-            ? previous
-            : current;
+          whichOne === 'start' ? start : whichOne === 'previous' ? previous : current;
         newEvent.direction = getDirection(previous, current);
         newEvent.moveDirection = getDirection(start, current);
         newEvent.deltaX = current[0] - previous[0];
@@ -637,11 +587,7 @@ function downed(this: Gesture, event: MouseEvent) {
         newEvent.leavePointers = [pointer0];
         const { start, previous, current } = pointer0;
         newEvent.getPoint = (whichOne) =>
-          whichOne === 'start'
-            ? start
-            : whichOne === 'previous'
-            ? previous
-            : current;
+          whichOne === 'start' ? start : whichOne === 'previous' ? previous : current;
       }
       newEvent.angle = 0 / 0;
       that.emit('rotate', newEvent);
@@ -716,15 +662,10 @@ function wheeled(this: Gesture, event: WheelEvent) {
     newEvent.pointers = [this._pointer0];
     const { start, previous, current } = this._pointer0;
     newEvent.getPoint = (whichOne) =>
-      whichOne === 'start'
-        ? start
-        : whichOne === 'previous'
-        ? previous
-        : current;
+      whichOne === 'start' ? start : whichOne === 'previous' ? previous : current;
     const scale = Math.pow(
       2,
-      -event.deltaY *
-        (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002),
+      -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002),
     );
     this._wheelTimerEnd.scale *= scale;
     newEvent.moveScale = this._wheelTimerEnd.scale;

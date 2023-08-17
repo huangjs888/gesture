@@ -1,9 +1,3 @@
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime-corejs3/helpers/interopRequireDefault");
-exports.__esModule = true;
-exports.default = void 0;
-var _splice = _interopRequireDefault(require("@babel/runtime-corejs3/core-js/instance/splice"));
 /*
  * @Author: Huangjs
  * @Date: 2023-02-13 15:22:58
@@ -11,26 +5,22 @@ var _splice = _interopRequireDefault(require("@babel/runtime-corejs3/core-js/ins
  * @LastEditTime: 2023-08-17 11:33:48
  * @Description: ******
  */
-var EventTarget = /*#__PURE__*/function () {
-  function EventTarget() {
+
+export default class EventTarget {
+  constructor() {
     this.events = {};
     this.events = {};
   }
-  var _proto = EventTarget.prototype;
-  _proto.one = function one(type, handler, single) {
-    var _this = this;
-    var onceHandler = typeof handler === 'function' ? function () {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
+  one(type, handler, single) {
+    const onceHandler = typeof handler === 'function' ? (...args) => {
       // 该事件只执行一次，执行完就解除事件
       handler.apply(null, args);
-      _this.off(type, onceHandler, single);
+      this.off(type, onceHandler, single);
     } : handler;
     this.on(type, onceHandler, single);
-  };
-  _proto.on = function on(type, handler, single) {
-    var events = this.events[type] || {
+  }
+  on(type, handler, single) {
+    const events = this.events[type] || {
       pool: [],
       single: -1
     };
@@ -46,8 +36,8 @@ var EventTarget = /*#__PURE__*/function () {
       } else {
         // 该事件可以注册多次，执行时，会遍历全部事件全部执行，类似于dom的addEventListener
         // 注册进去之前会检查是否有相同的处理程序，如果有，则不再添加（独立程序不参与）
-        var unregistered = true;
-        for (var i = 0, len = events.pool.length; i < len; i++) {
+        let unregistered = true;
+        for (let i = 0, len = events.pool.length; i < len; i++) {
           if (events.pool[i] === handler && i !== events.single) {
             unregistered = false;
             break;
@@ -58,14 +48,13 @@ var EventTarget = /*#__PURE__*/function () {
         }
       }
     } else if (single && events.single !== -1) {
-      var _context;
       // 需要把独立事件删除，相当于解绑独立事件
-      (0, _splice.default)(_context = events.pool).call(_context, events.single, 1);
+      events.pool.splice(events.single, 1);
       events.single = -1;
     }
     this.events[type] = events;
-  };
-  _proto.off = function off(type, handler, single) {
+  }
+  off(type, handler, single) {
     if (typeof type === 'undefined') {
       // 没有type则删除全部事件
       this.events = {};
@@ -73,36 +62,34 @@ var EventTarget = /*#__PURE__*/function () {
       // 删除type下的所有事件
       delete this.events[type];
     } else if (single) {
-      var events = this.events[type];
+      const events = this.events[type];
       if (events && events.single !== -1) {
-        var _context2;
         // 删除独立程序事件
-        (0, _splice.default)(_context2 = events.pool).call(_context2, events.single, 1);
+        events.pool.splice(events.single, 1);
         events.single = -1;
       }
     } else {
-      var _events = this.events[type];
-      if (_events) {
+      const events = this.events[type];
+      if (events) {
         // 检查并删除事件池内事件
-        for (var i = _events.pool.length - 1; i >= 0; i--) {
-          if (_events.pool[i] === handler && i !== _events.single) {
-            var _context3;
-            (0, _splice.default)(_context3 = _events.pool).call(_context3, i, 1);
+        for (let i = events.pool.length - 1; i >= 0; i--) {
+          if (events.pool[i] === handler && i !== events.single) {
+            events.pool.splice(i, 1);
             // 因为相同事件只会有一个，所以删除后不需要再检查了
             break;
           }
         }
       }
     }
-  };
-  _proto.emit = function emit(type, event) {
-    var events = this.events[type];
+  }
+  emit(type, event) {
+    const events = this.events[type];
     if (events) {
       // 循环执行事件池里的事件
-      for (var i = 0, len = events.pool.length; i < len; i++) {
-        var handler = events.pool[i];
+      for (let i = 0, len = events.pool.length; i < len; i++) {
+        const handler = events.pool[i];
         if (typeof handler === 'function') {
-          var immediatePropagation = handler.apply(null, [event, type]);
+          const immediatePropagation = handler.apply(null, [event, type]);
           // 返回值为false，则阻止后于该事件注册的同类型事件触发
           if (immediatePropagation === false) {
             break;
@@ -110,7 +97,5 @@ var EventTarget = /*#__PURE__*/function () {
         }
       }
     }
-  };
-  return EventTarget;
-}();
-exports.default = EventTarget;
+  }
+}

@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-02-13 15:22:58
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-08-03 10:22:42
+ * @LastEditTime: 2023-08-16 17:23:53
  * @Description: ******
  */
 
@@ -14,11 +14,7 @@ const isCurrentTarget = (target: HTMLElement, currentTarget: HTMLElement) => {
   return !!_target;
 };
 
-export function fixOption(
-  value: number | undefined,
-  defaultValue: number,
-  minVal: number,
-) {
+export function fixOption(value: number | undefined, defaultValue: number, minVal: number) {
   return typeof value !== 'number' || value < minVal ? defaultValue : value;
 }
 
@@ -39,10 +35,7 @@ export function getEventPoints(
   if (event instanceof TouchEvent) {
     if (started) {
       const touches = Array.prototype.filter.call(event.touches, (t) =>
-        isCurrentTarget(
-          t.target as HTMLElement,
-          event.currentTarget as HTMLElement,
-        ),
+        isCurrentTarget(t.target as HTMLElement, event.currentTarget as HTMLElement),
       );
       return {
         points: touches,
