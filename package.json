@@ -1,6 +1,6 @@
 {
   "name": "@huangjs888/gesture",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "gesture event",
   "main": "lib/index.js",
   "types": "es/index.d.ts",
