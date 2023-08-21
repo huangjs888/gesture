@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-09 11:24:45
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-08-16 17:17:15
+ * @LastEditTime: 2023-08-21 14:28:52
  * @Description: ******
  */
 
@@ -47,7 +47,7 @@ const config = {
     babel({
       babelHelpers: MOD_ENV === 'esm' ? 'bundled' : 'runtime',
       include: 'src/**/*',
-      exclude: MOD_ENV === 'esm' ? '**/node_modules/**' : undefined,
+      exclude: '**/node_modules/**',
       extensions,
     }),
   ],
