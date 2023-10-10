@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-09 11:24:45
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-08-21 14:28:52
+ * @LastEditTime: 2023-10-10 14:06:52
  * @Description: ******
  */
 
@@ -15,15 +15,11 @@ import pkg from './package.json';
 const { NODE_ENV, MOD_ENV } = process.env;
 
 const pathname = MOD_ENV === 'cjs' ? 'lib' : MOD_ENV === 'esm' ? 'es' : 'dist';
-const extensions = ['.js', '.ts'];
+const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 const config = {
-  input: 'src/index.ts',
   output: [
     {
-      file: `${pathname}/gesture${NODE_ENV === 'production' ? '.min' : ''}.js`,
       format: MOD_ENV,
-      // umd时挂在全局变量下的模块名称
-      name: MOD_ENV === 'umd' ? 'Gesture' : undefined,
       sourcemap: true,
     },
   ],
@@ -47,7 +43,8 @@ const config = {
     babel({
       babelHelpers: MOD_ENV === 'esm' ? 'bundled' : 'runtime',
       include: 'src/**/*',
-      exclude: '**/node_modules/**',
+      exclude: MOD_ENV === 'esm' ? '**/node_modules/**' : undefined,
+      // /node_modules/ : /node_modules(?!(\/|\\)(@huangjs888(\/|\\)(.+)?))/,
       extensions,
     }),
   ],
@@ -65,4 +62,51 @@ if (NODE_ENV === 'production') {
   );
 }
 
-export default config;
+export default [
+  {
+    ...config,
+    input: 'src/index.ts',
+    output: [
+      {
+        ...config.output[0],
+        file: `${pathname}/gesture${NODE_ENV === 'production' ? '.min' : ''}.js`,
+        // umd时挂在全局变量下的模块名称
+        name: MOD_ENV === 'umd' ? 'Gesture' : undefined,
+      },
+    ],
+    plugins: [...config.plugins],
+  },
+  {
+    ...config,
+    input: 'src/emitter/index.ts',
+    output: [
+      {
+        ...config.output[0],
+        file: `${pathname}/emitter${NODE_ENV === 'production' ? '.min' : ''}.js`,
+        // umd时挂在全局变量下的模块名称
+        name: MOD_ENV === 'umd' ? 'EventEmitter' : undefined,
+      },
+    ],
+    plugins: [...config.plugins],
+  },
+  {
+    ...config,
+    input: 'src/react/index.tsx',
+    output: [
+      {
+        ...config.output[0],
+        file: `${pathname}/react-gesture${NODE_ENV === 'production' ? '.min' : ''}.js`,
+        // umd时挂在全局变量下的模块名称
+        name: MOD_ENV === 'umd' ? 'ReactGesture' : undefined,
+        globals:
+          MOD_ENV === 'umd'
+            ? {
+                react: 'React',
+                'react-dom': 'ReactDOM',
+              }
+            : {},
+      },
+    ],
+    plugins: [...config.plugins],
+  },
+];

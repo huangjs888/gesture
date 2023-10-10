@@ -1,0 +1,146 @@
+<!--
+ * @Author: Huangjs
+ * @Date: 2021-10-15 15:24:21
+ * @LastEditors: Huangjs
+ * @LastEditTime: 2023-10-10 13:32:07
+ * @Description: ******
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scaleable=no"
+      name="viewport" />
+    <title>过渡测试</title>
+    <script src="../../dist/gesture.min.js"></script>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        background-color: #eee;
+      }
+      .app {
+        text-align: center;
+        margin: 20px;
+      }
+      .app .rect {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 300px;
+        height: 300px;
+        color: #fff;
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div
+        class="rect"
+        style="transform: translate(0px, 0px) scale(1) rotate(0deg); transition: none">
+        Drag me
+      </div>
+    </div>
+    <script>
+      (function () {
+        const rect = document.querySelector('.rect');
+        let transform = { a: 0, k: 1, x: 0, y: 0 };
+        let transition = 'none';
+        const event = function (e, t) {
+          console.log(t, e);
+          if (t === 'longTap') {
+            alert('longTap');
+            // unbindEvent();
+          } else if (t === 'doubleTap') {
+            transform = {
+              ...transform,
+              k: transform.k !== 2 ? 2 : 1,
+            };
+            transition = 'transform 500ms';
+          } else if (t === 'singleTap') {
+            transform = { a: 0, k: 1, x: 0, y: 0 };
+            transition = 'transform 500ms';
+          } else if (t === 'pan') {
+            transform = {
+              ...transform,
+              x: transform.x + (e.deltaX || 0),
+              y: transform.y + (e.deltaY || 0),
+            };
+            transition = 'none';
+          } else if (t === 'rotate') {
+            transform = {
+              ...transform,
+              a: transform.a + (e.angle || 0),
+            };
+            transition = 'none';
+          } else if (t === 'scale') {
+            transform = {
+              ...transform,
+              k: transform.k * (e.scale || 1),
+            };
+            transition = 'none';
+          } else if (t === 'swipe') {
+            const { velocity = 0, swipeComputed } = e;
+            if (velocity > 0 && swipeComputed) {
+              // 按照0.003的减速度减速运行得到减速到0时的时间和x，y方向的分量距离
+              const { duration, stretchX, stretchY } = swipeComputed(0.003);
+              transform = { ...transform, x: transform.x + stretchX, y: transform.y + stretchY };
+              transition = `transform ${duration}ms`;
+            }
+          }
+          rect.style.transform = `translate(${transform.x}px, ${transform.y}px) scale(${transform.k}) rotate(${transform.a}deg)`;
+          rect.style.transition = transition;
+        };
+        const gesture = new window.Gesture.default(rect);
+        gesture.resetOptions({
+          wheelDelay: 350,
+          longTapInterval: 750,
+          doubleTapInterval: 250,
+          doubleTapDistance: 30,
+          touchMoveDistance: 3,
+          swipeVelocity: 0.3,
+          swipeDuration: 100,
+          raiseDuration: 100,
+        });
+        gesture.on('gestureStart', (e) => event(e, 'gestureStart'));
+        gesture.on('gestureMove', (e) => event(e, 'gestureMove'));
+        gesture.on('gestureEnd', (e) => event(e, 'gestureEnd'));
+        gesture.on('pointerCancel', (e) => event(e, 'pointerCancel'));
+        gesture.on('pointerStart', (e) => event(e, 'pointerStart'));
+        gesture.on('pointerMove', (e) => event(e, 'pointerMove'));
+        gesture.on('pointerEnd', (e) => event(e, 'pointerEnd'));
+        gesture.on('doubleTap', (e) => event(e, 'doubleTap'));
+        gesture.on('singleTap', (e) => event(e, 'singleTap'));
+        gesture.on('longTap', (e) => event(e, 'longTap'));
+        gesture.on('rotate', (e) => event(e, 'rotate'));
+        gesture.on('scale', (e) => event(e, 'scale'));
+        gesture.on('swipe', (e) => event(e, 'swipe'));
+        gesture.on('pan', (e) => event(e, 'pan'));
+        gesture.on('multiPan', (e) => event(e, 'multiPan'));
+        gesture.on('tap', (e) => event(e, 'tap'));
+        const transitionend = () => {
+          transition = 'none';
+          rect.style.transition = transition;
+        };
+        const contextmenu = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        };
+        rect.addEventListener('transitionend', transitionend);
+        window.addEventListener('contextmenu', contextmenu);
+        const unbindEvent = () => {
+          gesture.destory();
+          rect.removeEventListener('transitionend', transitionend);
+          window.removeEventListener('contextmenu', contextmenu);
+        };
+      })();
+    </script>
+  </body>
+</html>

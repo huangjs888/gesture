@@ -1,16 +1,13 @@
 /*
  * @Author: Huangjs
- * @Date: 2023-07-26 16:28:53
+ * @Date: 2023-08-08 16:46:18
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-07-27 10:50:40
+ * @LastEditTime: 2023-10-10 14:05:37
  * @Description: ******
  */
 
-import EventTarget from './event';
-import Gesture from './gesture';
+import Gesture from './rawjs';
 
-export * from './gesture';
-
-export { EventTarget };
+export * from './rawjs';
 
 export default Gesture;
