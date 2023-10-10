@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2021-05-10 15:55:29
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-10 13:52:10
+ * @LastEditTime: 2023-10-10 15:16:02
  * @Description: ******
 -->
 
@@ -182,3 +182,5 @@ class EventClass extends EventEmitter<EventType, EventObject> {
 }
 
 ```
+
+在线测试预览地址:[https://huangjs888.github.io/gesture/](https://huangjs888.github.io/gesture/ "预览")
