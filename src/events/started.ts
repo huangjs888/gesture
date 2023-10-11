@@ -2,10 +2,11 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 11:27:38
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-09-06 12:01:41
+ * @LastEditTime: 2023-10-11 09:30:07
  * @Description: ******
  */
 
+import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
 import { getEventPoints, getDistance, getCenter } from '../utils';
 import type Core from '../core';
 import { type IGestureEvent } from '../core';
@@ -17,6 +18,9 @@ export default function started(this: Core, event: any) {
     pointers: [],
     leavePointers: [],
     getPoint: () => [0, 0],
+    preventDefault: preventDefault.bind(event),
+    stopPropagation: stopPropagation.bind(event),
+    stopImmediatePropagation: stopImmediatePropagation.bind(event),
   };
   const { points, isFirst } = getEventPoints(event, true);
   // 表示第一次放入手指（点）

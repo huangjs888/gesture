@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 09:36:07
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-09-14 09:43:35
+ * @LastEditTime: 2023-10-11 10:34:10
  * @Description: ******
  */
 
@@ -139,6 +139,9 @@ export type IGestureEvent = {
   };
   timestamp: number;
   sourceEvent: any;
+  preventDefault: () => void; // 阻止原生事件默认行为，相当于sourceEvent.preventDefault
+  stopPropagation: () => void; // 阻止原生事件冒泡，相当于sourceEvent.stopPropagation
+  stopImmediatePropagation: () => void; // 阻止原生事件冒泡及其后注册的未执行事件执行，相当于sourceEvent.stopImmediatePropagation（如果有的情况下，react合成事件没有）
 };
 
 export default Gesture;

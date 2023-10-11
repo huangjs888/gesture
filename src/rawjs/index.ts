@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 09:36:07
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-10 13:54:36
+ * @LastEditTime: 2023-10-11 11:30:54
  * @Description: ******
  */
 
@@ -27,10 +27,13 @@ class Gesture extends Core {
       const touchmoved = moved.bind(this);
       const touchended = ended.bind(this);
       const touchcanceled = canceled.bind(this);
-      _element.addEventListener('touchstart', touchstarted, false);
-      _element.addEventListener('touchmove', touchmoved, false);
-      _element.addEventListener('touchend', touchended, false);
-      _element.addEventListener('touchcancel', touchcanceled, false);
+      // Chrome 73之后，所有绑定在根节点（window,document,body）的scroll,wheel,mobile touch事件都会默认passive为true
+      // 这就会导致事件内调用e.preventDefault()无效，还会报错：Unable to preventDefault inside passive event listener invocation.
+      // 但是非根节点，默认还是false，但是为了防止后续浏览器变更，这里全部主动设置为false，capture为false表示冒泡阶段触发，e.stopPropagation()可用
+      _element.addEventListener('touchstart', touchstarted, { capture: false, passive: false });
+      _element.addEventListener('touchmove', touchmoved, { capture: false, passive: false });
+      _element.addEventListener('touchend', touchended, { capture: false, passive: false });
+      _element.addEventListener('touchcancel', touchcanceled, { capture: false, passive: false });
       this._unbind = () => {
         _element.removeEventListener('touchstart', touchstarted);
         _element.removeEventListener('touchmove', touchmoved);
@@ -41,8 +44,8 @@ class Gesture extends Core {
       // 注册触摸事件
       const mousedowned = downed.bind(this);
       const mousewheeled = wheeled.bind(this);
-      _element.addEventListener('mousedown', mousedowned, false);
-      _element.addEventListener('wheel', mousewheeled, false);
+      _element.addEventListener('mousedown', mousedowned, { capture: false, passive: false });
+      _element.addEventListener('wheel', mousewheeled, { capture: false, passive: false });
       this._unbind = () => {
         _element.removeEventListener('mousedown', mousedowned);
         _element.removeEventListener('wheel', mousewheeled);

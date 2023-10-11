@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-22 16:15:47
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-10 13:57:33
+ * @LastEditTime: 2023-10-11 09:17:44
  * @Description: ******
  */
 
@@ -111,15 +111,9 @@ export default React.forwardRef<IGestureRef, IGestureProps>(
         emitter.apply(core, args);
       }
     };
-
-    if (!children) {
-      console.warn('Warning: Gesture children must exist.');
-      return null;
-    }
-    return React.Children.only(
-      React.cloneElement(children as any, {
-        ref: refFun,
-        ...(isTouchable()
+    const listener = React.useMemo(
+      () =>
+        isTouchable()
           ? {
               onTouchStart: (...args: any) => bind(started, args),
               onTouchMove: (...args: any) => bind(moved, args),
@@ -129,7 +123,18 @@ export default React.forwardRef<IGestureRef, IGestureProps>(
           : {
               onMouseDown: (...args: any) => bind(downed, args),
               onWheel: (...args: any) => bind(wheeled, args),
-            }),
+            },
+      [],
+    );
+
+    if (!children) {
+      console.warn('Warning: Gesture children must exist.');
+      return null;
+    }
+    return React.Children.only(
+      React.cloneElement(children as any, {
+        ref: refFun,
+        ...listener,
       }),
     );
   },

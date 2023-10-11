@@ -7,6 +7,7 @@
  */
 
 import ended from './ended';
+import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
 import type Core from '../core';
 
 export default function canceled(this: Core, event: any) {
@@ -16,6 +17,9 @@ export default function canceled(this: Core, event: any) {
     pointers: [],
     leavePointers: [],
     getPoint: () => [0, 0],
+    preventDefault: preventDefault.bind(event),
+    stopPropagation: stopPropagation.bind(event),
+    stopImmediatePropagation: stopImmediatePropagation.bind(event),
   });
   ended.apply(this, [event]);
 }

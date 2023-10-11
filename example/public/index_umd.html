@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2021-10-15 15:24:21
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-10 13:32:07
+ * @LastEditTime: 2023-10-11 15:01:20
  * @Description: ******
 -->
 <!doctype html>
@@ -15,6 +15,14 @@
     <title>过渡测试</title>
     <script src="../../dist/gesture.min.js"></script>
     <style>
+      * {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
       html,
       body {
         width: 100%;
@@ -129,16 +137,40 @@
           transition = 'none';
           rect.style.transition = transition;
         };
-        const contextmenu = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        };
         rect.addEventListener('transitionend', transitionend);
-        window.addEventListener('contextmenu', contextmenu);
-        const unbindEvent = () => {
+        // Chrome 73之后，所有绑定在根节点（window,document,body）的scroll,wheel,mobile touch事件都会默认passive为true
+        // 这就会导致事件内调用e.preventDefault()无效，还会报错：Unable to preventDefault inside passive event listener invocation.
+        // 这里设置为false，并注册事件达到关闭浏览器的右键菜单，选择，滚动，缩放等默认行为
+        const preventDefault = (e) => e.preventDefault();
+        // 阻止web端右键菜单行为
+        window.addEventListener('contextmenu', preventDefault, { capture: false, passive: false });
+        // 阻止移动端长按菜单，滚动，缩放，选择等行为
+        window.addEventListener('touchstart', preventDefault, { capture: false, passive: false });
+        // 阻止web端滚动行为
+        window.addEventListener('wheel', preventDefault, { capture: false, passive: false });
+        // 阻止web端选择行为
+        window.addEventListener('dragstart', preventDefault, {
+          capture: false,
+          passive: false,
+        });
+        // 阻止web端选择行为
+        if ('onselectstart' in window.document.documentElement) {
+          // capture为true使其为捕获阶段就执行
+          window.addEventListener('selectstart', preventDefault, {
+            capture: false,
+            passive: false,
+          });
+        }
+        return () => {
           gesture.destory();
           rect.removeEventListener('transitionend', transitionend);
-          window.removeEventListener('contextmenu', contextmenu);
+          window.removeEventListener('contextmenu', preventDefault);
+          window.removeEventListener('touchstart', preventDefault);
+          window.removeEventListener('wheel', preventDefault);
+          window.removeEventListener('dragstart', preventDefault);
+          if ('onselectstart' in window.document.documentElement) {
+            window.removeEventListener('selectstart', preventDefault);
+          }
         };
       })();
     </script>

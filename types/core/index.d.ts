@@ -72,5 +72,8 @@ export type IGestureEvent = {
     };
     timestamp: number;
     sourceEvent: any;
+    preventDefault: () => void;
+    stopPropagation: () => void;
+    stopImmediatePropagation: () => void;
 };
 export default Gesture;

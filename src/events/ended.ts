@@ -2,10 +2,11 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 11:27:38
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-09-06 14:45:49
+ * @LastEditTime: 2023-10-11 09:30:38
  * @Description: ******
  */
 
+import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
 import {
   getEventPoints,
   getDirection,
@@ -25,6 +26,9 @@ export default function ended(this: Core, event: any) {
     pointers: [],
     leavePointers: [],
     getPoint: () => [0, 0],
+    preventDefault: preventDefault.bind(event),
+    stopPropagation: stopPropagation.bind(event),
+    stopImmediatePropagation: stopImmediatePropagation.bind(event),
   };
   // 临时保存当前手指（点）
   let pointer0: IGesturePointer | null = null;

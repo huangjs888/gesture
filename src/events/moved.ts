@@ -6,6 +6,7 @@
  * @Description: ******
  */
 
+import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
 import { getEventPoints, getDirection, getDistance, getAngle, getCenter } from '../utils';
 import type Core from '../core';
 import { type IGestureEvent } from '../core';
@@ -17,6 +18,9 @@ export default function moved(this: Core, event: any) {
     pointers: [],
     leavePointers: [],
     getPoint: () => [0, 0],
+    preventDefault: preventDefault.bind(event),
+    stopPropagation: stopPropagation.bind(event),
+    stopImmediatePropagation: stopImmediatePropagation.bind(event),
   };
   if (this._pointer0) {
     this._pointer0.changed = false;

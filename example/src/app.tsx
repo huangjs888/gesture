@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-30 11:09:21
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-10 14:11:20
+ * @LastEditTime: 2023-10-11 14:54:53
  * @Description: ******
  */
 
@@ -76,13 +76,37 @@ function App() {
   };
 
   React.useEffect(() => {
-    const contextmenu = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-    };
-    window.addEventListener('contextmenu', contextmenu);
+    // Chrome 73之后，所有绑定在根节点（window,document,body）的scroll,wheel,mobile touch事件都会默认passive为true
+    // 这就会导致事件内调用e.preventDefault()无效，还会报错：Unable to preventDefault inside passive event listener invocation.
+    // 这里设置为false，并注册事件达到关闭浏览器的右键菜单，选择，滚动，缩放等默认行为
+    const preventDefault = (e: Event) => e.preventDefault();
+    // 阻止web端右键菜单行为
+    window.addEventListener('contextmenu', preventDefault, { capture: false, passive: false });
+    // 阻止移动端长按菜单，滚动，缩放，选择等行为
+    window.addEventListener('touchstart', preventDefault, { capture: false, passive: false });
+    // 阻止web端滚动行为
+    window.addEventListener('wheel', preventDefault, { capture: false, passive: false });
+    // 阻止web端选择行为
+    window.addEventListener('dragstart', preventDefault, {
+      capture: false,
+      passive: false,
+    });
+    // 阻止web端选择行为
+    if ('onselectstart' in window.document.documentElement) {
+      // capture为true使其为捕获阶段就执行
+      window.addEventListener('selectstart', preventDefault, {
+        capture: false,
+        passive: false,
+      });
+    }
     return () => {
-      window.removeEventListener('contextmenu', contextmenu);
+      window.removeEventListener('contextmenu', preventDefault);
+      window.removeEventListener('touchstart', preventDefault);
+      window.removeEventListener('wheel', preventDefault);
+      window.removeEventListener('dragstart', preventDefault);
+      if ('onselectstart' in window.document.documentElement) {
+        window.removeEventListener('selectstart', preventDefault);
+      }
     };
   }, []);
 
@@ -125,7 +149,12 @@ function App() {
             transition: transition,
           }}
           onTransitionEnd={() => setTransition('')}>
-          Drag me
+          <img
+            width={100}
+            height={100}
+            src="https://github.githubassets.com/images/modules/site/home/globe.jpg"
+          />
+          <span>大家好，我是测试项目，欢迎我把！</span>
         </div>
       </Gesture>
     </div>

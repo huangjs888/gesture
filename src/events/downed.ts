@@ -2,13 +2,14 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 11:27:38
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-09-06 15:22:21
+ * @LastEditTime: 2023-10-11 11:30:24
  * @Description: ******
  */
 
 import started from './started';
 import moved from './moved';
 import ended from './ended';
+import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
 import { getDirection } from '../utils';
 import type Core from '../core';
 import { type IGestureEvent } from '../core';
@@ -16,14 +17,28 @@ import { type IGestureEvent } from '../core';
 export default function downed(this: Core, event: any) {
   const that = this;
   if (typeof window !== 'undefined') {
-    window.addEventListener('mousemove', mousemoved);
-    window.addEventListener('mouseup', mouseupped);
-    window.addEventListener('blur', blured);
+    // Chrome 73之后，所有绑定在根节点（window,document,body）的scroll,wheel,mobile touch事件都会默认passive为true
+    // 这就会导致事件内调用e.preventDefault()无效，还会报错：Unable to preventDefault inside passive event listener invocation.
+    // 这里设置为false，capture为false表示冒泡阶段触发，e.stopPropagation()可用
+    window.addEventListener('mousemove', mousemoved, {
+      capture: false,
+      passive: false,
+    });
+    window.addEventListener('mouseup', mouseupped, {
+      capture: false,
+      passive: false,
+    });
+    window.addEventListener('blur', blured, {
+      capture: true,
+      passive: false,
+    });
+    // capture为true使其为捕获阶段就执行
     window.addEventListener('dragstart', dragstarted, {
       capture: true,
       passive: false,
     });
     if ('onselectstart' in window.document.documentElement) {
+      // capture为true使其为捕获阶段就执行
       window.addEventListener('selectstart', dragstarted, {
         capture: true,
         passive: false,
@@ -41,14 +56,12 @@ export default function downed(this: Core, event: any) {
       }
     }
   }
-  function blured(e: Event) {
-    e.preventDefault();
-    e.stopPropagation();
-    unbind();
-  }
   function dragstarted(e: Event) {
     e.preventDefault();
-    e.stopPropagation();
+  }
+  function blured(e: Event) {
+    dragstarted(e);
+    unbind();
   }
   function mousemoved(e: MouseEvent) {
     if (event.button === 0) {
@@ -60,6 +73,9 @@ export default function downed(this: Core, event: any) {
         pointers: [],
         leavePointers: [],
         getPoint: () => [0, 0],
+        preventDefault: preventDefault.bind(event),
+        stopPropagation: stopPropagation.bind(event),
+        stopImmediatePropagation: stopImmediatePropagation.bind(event),
       };
       const point = [e.pageX, e.pageY];
       if (that._pointer0) {
@@ -93,6 +109,9 @@ export default function downed(this: Core, event: any) {
         pointers: [],
         leavePointers: [],
         getPoint: () => [0, 0],
+        preventDefault: preventDefault.bind(event),
+        stopPropagation: stopPropagation.bind(event),
+        stopImmediatePropagation: stopImmediatePropagation.bind(event),
       };
       const point = [e.pageX, e.pageY];
       if (that._pointer0) {

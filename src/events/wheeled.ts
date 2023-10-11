@@ -2,10 +2,11 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 11:27:38
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-09-06 15:38:35
+ * @LastEditTime: 2023-10-11 09:32:15
  * @Description: ******
  */
 
+import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
 import type Core from '../core';
 import { type IGestureEvent } from '../core';
 
@@ -16,6 +17,9 @@ export default function wheeled(this: Core, event: any) {
     pointers: [],
     leavePointers: [],
     getPoint: () => [0, 0],
+    preventDefault: preventDefault.bind(event),
+    stopPropagation: stopPropagation.bind(event),
+    stopImmediatePropagation: stopImmediatePropagation.bind(event),
   };
   const point = [event.pageX, event.pageY];
   if (this._wheelTimerEnd) {
