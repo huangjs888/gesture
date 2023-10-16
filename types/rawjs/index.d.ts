@@ -8,5 +8,4 @@ declare class Gesture extends Core {
     destory(): void;
 }
 export * from '../core';
-export { isTouchable };
-export default Gesture;
+export { Gesture, isTouchable };

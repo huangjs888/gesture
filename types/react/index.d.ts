@@ -29,11 +29,10 @@ export type IGestureProps = {
     options?: IGestureOptions;
     children?: React.ReactNode;
 } & IGestureHandler;
-export * from '../core';
-export { isTouchable };
-declare const _default: React.ForwardRefExoticComponent<{
+declare const Gesture: React.ForwardRefExoticComponent<{
     preventAllTap?: boolean | undefined;
     options?: IGestureOptions | undefined;
     children?: React.ReactNode;
 } & IGestureHandler & React.RefAttributes<IGestureRef>>;
-export default _default;
+export * from '../core';
+export { Gesture, isTouchable };

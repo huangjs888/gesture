@@ -1021,7 +1021,7 @@
 
 "@huangjs888/gesture@file:..":
   "resolved" "file:.."
-  "version" "3.1.1"
+  "version" "3.1.2"
   dependencies:
     "@babel/runtime-corejs3" "^7.22.10"
     "@huangjs888/lightdom" "^2.1.5"

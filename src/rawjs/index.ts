@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 09:36:07
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-11 11:30:54
+ * @LastEditTime: 2023-10-16 14:58:09
  * @Description: ******
  */
 
@@ -66,6 +66,4 @@ class Gesture extends Core {
 
 export * from '../core';
 
-export { isTouchable };
-
-export default Gesture;
+export { Gesture, isTouchable };

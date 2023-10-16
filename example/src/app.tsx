@@ -2,12 +2,12 @@
  * @Author: Huangjs
  * @Date: 2023-08-30 11:09:21
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-11 14:54:53
+ * @LastEditTime: 2023-10-16 15:10:28
  * @Description: ******
  */
 
 import React from 'react';
-import Gesture, { type IGestureEvent } from '@huangjs888/gesture/react';
+import { Gesture, type IGestureEvent } from '@huangjs888/gesture/react';
 import './app.css';
 
 function App() {

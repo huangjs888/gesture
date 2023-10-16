@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2021-10-15 15:24:21
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-11 15:01:20
+ * @LastEditTime: 2023-10-16 15:17:02
  * @Description: ******
 -->
 <!doctype html>
@@ -106,7 +106,7 @@
           rect.style.transform = `translate(${transform.x}px, ${transform.y}px) scale(${transform.k}) rotate(${transform.a}deg)`;
           rect.style.transition = transition;
         };
-        const gesture = new window.Gesture.default(rect);
+        const gesture = new window.RawGesture.Gesture(rect);
         gesture.resetOptions({
           wheelDelay: 350,
           longTapInterval: 750,

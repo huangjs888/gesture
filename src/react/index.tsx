@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-22 16:15:47
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-11 09:17:44
+ * @LastEditTime: 2023-10-16 15:00:45
  * @Description: ******
  */
 
@@ -46,11 +46,7 @@ export type IGestureProps = {
   children?: React.ReactNode;
 } & IGestureHandler;
 
-export * from '../core';
-
-export { isTouchable };
-
-export default React.forwardRef<IGestureRef, IGestureProps>(
+const Gesture = React.forwardRef<IGestureRef, IGestureProps>(
   ({ children, options, preventAllTap, ...events }, ref) => {
     const elementRef = React.useRef<Element | null>(null);
     const coreRef = React.useRef<Core | null>(null);
@@ -139,3 +135,7 @@ export default React.forwardRef<IGestureRef, IGestureProps>(
     );
   },
 );
+
+export * from '../core';
+
+export { Gesture, isTouchable };
