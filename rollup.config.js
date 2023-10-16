@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-09 11:24:45
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-16 15:17:17
+ * @LastEditTime: 2023-10-16 17:46:22
  * @Description: ******
  */
 
@@ -92,7 +92,7 @@ export default [
         file: `${pathname}/emitter${NODE_ENV === 'production' ? '.min' : ''}.js`,
         // umd时挂在全局变量下的模块名称
         name: MOD_ENV === 'umd' ? 'EventEmitter' : undefined,
-        exports: 'default',
+        // exports: 'default',
       },
     ],
     plugins: [...config.plugins],
