@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 11:27:38
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-11 11:30:24
+ * @LastEditTime: 2023-10-20 13:25:58
  * @Description: ******
  */
 
@@ -10,7 +10,7 @@ import started from './started';
 import moved from './moved';
 import ended from './ended';
 import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
-import { getDirection } from '../utils';
+import { getDistance, getDirection } from '../utils';
 import type Core from '../core';
 import { type IGestureEvent } from '../core';
 
@@ -68,17 +68,18 @@ export default function downed(this: Core, event: any) {
       moved.apply(that, [e]);
     } else {
       const newEvent: IGestureEvent = {
-        sourceEvent: event,
+        sourceEvent: e,
         timestamp: Date.now(),
         pointers: [],
         leavePointers: [],
         getPoint: () => [0, 0],
-        preventDefault: preventDefault.bind(event),
-        stopPropagation: stopPropagation.bind(event),
-        stopImmediatePropagation: stopImmediatePropagation.bind(event),
+        isTouching: () => false,
+        preventDefault: preventDefault.bind(e),
+        stopPropagation: stopPropagation.bind(e),
+        stopImmediatePropagation: stopImmediatePropagation.bind(e),
       };
       const point = [e.pageX, e.pageY];
-      if (that._pointer0) {
+      if (that._pointer0 && getDistance(that._pointer0.start, point) > that.touchMoveDistance) {
         that._pointer0.previous = that._pointer0.current;
         that._pointer0.current = point;
         newEvent.pointers = [that._pointer0];
@@ -104,14 +105,15 @@ export default function downed(this: Core, event: any) {
       ended.apply(that, [e]);
     } else {
       const newEvent: IGestureEvent = {
-        sourceEvent: event,
+        sourceEvent: e,
         timestamp: Date.now(),
         pointers: [],
         leavePointers: [],
         getPoint: () => [0, 0],
-        preventDefault: preventDefault.bind(event),
-        stopPropagation: stopPropagation.bind(event),
-        stopImmediatePropagation: stopImmediatePropagation.bind(event),
+        isTouching: () => false,
+        preventDefault: preventDefault.bind(e),
+        stopPropagation: stopPropagation.bind(e),
+        stopImmediatePropagation: stopImmediatePropagation.bind(e),
       };
       const point = [e.pageX, e.pageY];
       if (that._pointer0) {

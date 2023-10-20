@@ -2,12 +2,12 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 11:27:38
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-11 09:30:07
+ * @LastEditTime: 2023-10-20 12:38:57
  * @Description: ******
  */
 
 import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
-import { getEventPoints, getDistance, getCenter } from '../utils';
+import { isTouchable, getEventPoints, getDistance, getCenter } from '../utils';
 import type Core from '../core';
 import { type IGestureEvent } from '../core';
 
@@ -18,6 +18,7 @@ export default function started(this: Core, event: any) {
     pointers: [],
     leavePointers: [],
     getPoint: () => [0, 0],
+    isTouching: () => !!isTouchable() && !!event.touches,
     preventDefault: preventDefault.bind(event),
     stopPropagation: stopPropagation.bind(event),
     stopImmediatePropagation: stopImmediatePropagation.bind(event),

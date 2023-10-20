@@ -17,6 +17,7 @@ export default function wheeled(this: Core, event: any) {
     pointers: [],
     leavePointers: [],
     getPoint: () => [0, 0],
+    isTouching: () => false,
     preventDefault: preventDefault.bind(event),
     stopPropagation: stopPropagation.bind(event),
     stopImmediatePropagation: stopImmediatePropagation.bind(event),

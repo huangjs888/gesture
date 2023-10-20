@@ -1,6 +1,5 @@
 import React from 'react';
 import Core, { type IGestureOptions, type IGestureEvent } from '../core';
-import { isTouchable } from '../utils';
 export type IGestureRef = {
     findDOMElement: () => Element | null | undefined;
     getInstance: () => Core | null | undefined;
@@ -35,4 +34,4 @@ declare const Gesture: React.ForwardRefExoticComponent<{
     children?: React.ReactNode;
 } & IGestureHandler & React.RefAttributes<IGestureRef>>;
 export * from '../core';
-export { Gesture, isTouchable };
+export default Gesture;

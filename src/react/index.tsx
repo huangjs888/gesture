@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-22 16:15:47
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-16 15:00:45
+ * @LastEditTime: 2023-10-20 13:15:37
  * @Description: ******
  */
 
@@ -108,18 +108,18 @@ const Gesture = React.forwardRef<IGestureRef, IGestureProps>(
       }
     };
     const listener = React.useMemo(
-      () =>
-        isTouchable()
+      () => ({
+        ...(isTouchable()
           ? {
               onTouchStart: (...args: any) => bind(started, args),
               onTouchMove: (...args: any) => bind(moved, args),
               onTouchEnd: (...args: any) => bind(ended, args),
               onTouchCancel: (...args: any) => bind(canceled, args),
             }
-          : {
-              onMouseDown: (...args: any) => bind(downed, args),
-              onWheel: (...args: any) => bind(wheeled, args),
-            },
+          : {}),
+        onMouseDown: (...args: any) => bind(downed, args),
+        onWheel: (...args: any) => bind(wheeled, args),
+      }),
       [],
     );
 
@@ -138,4 +138,4 @@ const Gesture = React.forwardRef<IGestureRef, IGestureProps>(
 
 export * from '../core';
 
-export { Gesture, isTouchable };
+export default Gesture;

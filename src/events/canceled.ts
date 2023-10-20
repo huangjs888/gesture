@@ -8,6 +8,7 @@
 
 import ended from './ended';
 import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
+import { isTouchable } from '../utils';
 import type Core from '../core';
 
 export default function canceled(this: Core, event: any) {
@@ -17,6 +18,7 @@ export default function canceled(this: Core, event: any) {
     pointers: [],
     leavePointers: [],
     getPoint: () => [0, 0],
+    isTouching: () => !!isTouchable() && !!event.touches,
     preventDefault: preventDefault.bind(event),
     stopPropagation: stopPropagation.bind(event),
     stopImmediatePropagation: stopImmediatePropagation.bind(event),

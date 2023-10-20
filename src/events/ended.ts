@@ -8,6 +8,7 @@
 
 import { preventDefault, stopPropagation, stopImmediatePropagation } from './common';
 import {
+  isTouchable,
   getEventPoints,
   getDirection,
   getDistance,
@@ -26,6 +27,7 @@ export default function ended(this: Core, event: any) {
     pointers: [],
     leavePointers: [],
     getPoint: () => [0, 0],
+    isTouching: () => !!isTouchable() && !!event.touches,
     preventDefault: preventDefault.bind(event),
     stopPropagation: stopPropagation.bind(event),
     stopImmediatePropagation: stopImmediatePropagation.bind(event),

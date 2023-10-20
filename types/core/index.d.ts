@@ -72,6 +72,7 @@ export type IGestureEvent = {
     };
     timestamp: number;
     sourceEvent: any;
+    isTouching: () => boolean;
     preventDefault: () => void;
     stopPropagation: () => void;
     stopImmediatePropagation: () => void;

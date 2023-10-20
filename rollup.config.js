@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-09 11:24:45
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-16 17:46:22
+ * @LastEditTime: 2023-10-20 13:31:11
  * @Description: ******
  */
 
@@ -73,15 +73,10 @@ export default [
         ...config.output[0],
         file: `${pathname}/gesture${NODE_ENV === 'production' ? '.min' : ''}.js`,
         // umd时挂在全局变量下的模块名称
-        name: MOD_ENV === 'umd' ? 'RawGesture' : undefined,
-        /* globals: {
-          '@huangjs888/lightdom': 'LightDom',
-        }, */
+        name: MOD_ENV === 'umd' ? 'Gesture' : undefined,
       },
     ],
     plugins: [...config.plugins],
-    // 配合上面的globals，不把lightdom打包进来
-    // external: [...config.external, '@huangjs888/lightdom'],
   },
   {
     ...config,
@@ -92,7 +87,6 @@ export default [
         file: `${pathname}/emitter${NODE_ENV === 'production' ? '.min' : ''}.js`,
         // umd时挂在全局变量下的模块名称
         name: MOD_ENV === 'umd' ? 'EventEmitter' : undefined,
-        // exports: 'default',
       },
     ],
     plugins: [...config.plugins],

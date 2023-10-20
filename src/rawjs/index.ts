@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 09:36:07
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-16 14:58:09
+ * @LastEditTime: 2023-10-20 13:15:27
  * @Description: ******
  */
 
@@ -22,6 +22,7 @@ class Gesture extends Core {
     }
     this.element = _element;
     // 注册触摸事件
+    let unbindTouch = () => {};
     if (isTouchable()) {
       const touchstarted = started.bind(this);
       const touchmoved = moved.bind(this);
@@ -34,23 +35,23 @@ class Gesture extends Core {
       _element.addEventListener('touchmove', touchmoved, { capture: false, passive: false });
       _element.addEventListener('touchend', touchended, { capture: false, passive: false });
       _element.addEventListener('touchcancel', touchcanceled, { capture: false, passive: false });
-      this._unbind = () => {
+      unbindTouch = () => {
         _element.removeEventListener('touchstart', touchstarted);
         _element.removeEventListener('touchmove', touchmoved);
         _element.removeEventListener('touchend', touchended);
         _element.removeEventListener('touchcancel', touchcanceled);
       };
-    } else {
-      // 注册触摸事件
-      const mousedowned = downed.bind(this);
-      const mousewheeled = wheeled.bind(this);
-      _element.addEventListener('mousedown', mousedowned, { capture: false, passive: false });
-      _element.addEventListener('wheel', mousewheeled, { capture: false, passive: false });
-      this._unbind = () => {
-        _element.removeEventListener('mousedown', mousedowned);
-        _element.removeEventListener('wheel', mousewheeled);
-      };
     }
+    // 注册鼠标事件
+    const mousedowned = downed.bind(this);
+    const mousewheeled = wheeled.bind(this);
+    _element.addEventListener('mousedown', mousedowned, { capture: false, passive: false });
+    _element.addEventListener('wheel', mousewheeled, { capture: false, passive: false });
+    this._unbind = () => {
+      _element.removeEventListener('mousedown', mousedowned);
+      _element.removeEventListener('wheel', mousewheeled);
+      unbindTouch();
+    };
   }
   destory() {
     // 解除所有事件
@@ -66,4 +67,4 @@ class Gesture extends Core {
 
 export * from '../core';
 
-export { Gesture, isTouchable };
+export default Gesture;
