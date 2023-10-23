@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 11:27:38
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-20 13:25:58
+ * @LastEditTime: 2023-10-23 14:37:27
  * @Description: ******
  */
 
@@ -16,6 +16,9 @@ import { type IGestureEvent } from '../core';
 
 export default function downed(this: Core, event: any) {
   const that = this;
+  if (that._noMouseTimer) {
+    return;
+  }
   if (typeof window !== 'undefined') {
     // Chrome 73之后，所有绑定在根节点（window,document,body）的scroll,wheel,mobile touch事件都会默认passive为true
     // 这就会导致事件内调用e.preventDefault()无效，还会报错：Unable to preventDefault inside passive event listener invocation.

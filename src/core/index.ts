@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 09:36:07
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-20 12:36:58
+ * @LastEditTime: 2023-10-23 14:33:37
  * @Description: ******
  */
 
@@ -19,6 +19,7 @@ class Gesture extends EventEmitter<IGestureEventType, IGestureEvent> {
   swipeDuration: number = 100;
   raiseDuration: number = 100;
   _rotateAngle: number = 0;
+  _noMouseTimer: number = 0;
   _singleTapTimer: number = 0;
   _longTapTimer: number = 0;
   _wheelTimerEnd: {

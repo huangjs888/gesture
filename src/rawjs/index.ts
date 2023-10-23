@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 09:36:07
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-20 13:15:27
+ * @LastEditTime: 2023-10-23 14:29:27
  * @Description: ******
  */
 
@@ -21,7 +21,7 @@ class Gesture extends Core {
       throw new Error('Please pass in a valid element...');
     }
     this.element = _element;
-    // 注册触摸事件
+    // 注册触摸事件，当时前设备支持触摸才会注册
     let unbindTouch = () => {};
     if (isTouchable()) {
       const touchstarted = started.bind(this);
@@ -42,7 +42,7 @@ class Gesture extends Core {
         _element.removeEventListener('touchcancel', touchcanceled);
       };
     }
-    // 注册鼠标事件
+    // 注册鼠标事件（无法判断当前设备是否支持鼠标，就统一注册鼠标事件）
     const mousedowned = downed.bind(this);
     const mousewheeled = wheeled.bind(this);
     _element.addEventListener('mousedown', mousedowned, { capture: false, passive: false });

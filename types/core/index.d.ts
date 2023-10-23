@@ -9,6 +9,7 @@ declare class Gesture extends EventEmitter<IGestureEventType, IGestureEvent> {
     swipeDuration: number;
     raiseDuration: number;
     _rotateAngle: number;
+    _noMouseTimer: number;
     _singleTapTimer: number;
     _longTapTimer: number;
     _wheelTimerEnd: {

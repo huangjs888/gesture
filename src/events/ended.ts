@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-23 11:27:38
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-11 09:30:38
+ * @LastEditTime: 2023-10-23 14:41:50
  * @Description: ******
  */
 
@@ -32,6 +32,14 @@ export default function ended(this: Core, event: any) {
     stopPropagation: stopPropagation.bind(event),
     stopImmediatePropagation: stopImmediatePropagation.bind(event),
   };
+  if (!!isTouchable() && !!event.touches) {
+    if (this._noMouseTimer) {
+      clearTimeout(this._noMouseTimer);
+    }
+    this._noMouseTimer = +setTimeout(() => {
+      this._noMouseTimer = 0;
+    }, this.doubleTapInterval);
+  }
   // 临时保存当前手指（点）
   let pointer0: IGesturePointer | null = null;
   let pointer1: IGesturePointer | null = null;
