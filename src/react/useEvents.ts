@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-22 16:15:47
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-10 11:33:15
+ * @LastEditTime: 2023-10-27 10:29:25
  * @Description: ******
  */
 
@@ -11,24 +11,20 @@ import type Core from '../core';
 import { type IGestureEvent, type IGestureEventType } from '../core';
 import { type IHandler, type IGestureHandler } from './index';
 
-function useEvent(getCore: () => Core | null, type: IGestureEventType, onEvent?: IHandler): void {
+function useEvent(core: Core, type: IGestureEventType, onEvent?: IHandler): void {
   useIsomorphicLayoutEffect(() => {
-    const core = getCore();
-    if (core) {
-      const handler = (e: IGestureEvent) => {
-        if (typeof onEvent === 'function') {
-          onEvent.apply(null, [e]);
-        }
-      };
-      core.on(type, handler);
-      return () => {
-        core.off(type, handler);
-      };
-    }
-    return () => {};
-  }, [onEvent, type, getCore]);
+    const handler = (e: IGestureEvent) => {
+      if (typeof onEvent === 'function') {
+        onEvent.apply(null, [e]);
+      }
+    };
+    core.on(type, handler);
+    return () => {
+      core.off(type, handler);
+    };
+  }, [core, type, onEvent]);
 }
-export function useEvents(events: IGestureHandler, getCore: () => Core | null): void {
+export function useEvents(events: IGestureHandler, core: Core): void {
   const {
     onPan,
     onTap,
@@ -47,20 +43,20 @@ export function useEvents(events: IGestureHandler, getCore: () => Core | null): 
     onGestureMove,
     onGestureEnd,
   } = events;
-  useEvent(getCore, 'pan', onPan);
-  useEvent(getCore, 'tap', onTap);
-  useEvent(getCore, 'swipe', onSwipe);
-  useEvent(getCore, 'singleTap', onSingleTap);
-  useEvent(getCore, 'longTap', onLongTap);
-  useEvent(getCore, 'doubleTap', onDoubleTap);
-  useEvent(getCore, 'multiPan', onMultiPan);
-  useEvent(getCore, 'scale', onScale);
-  useEvent(getCore, 'rotate', onRotate);
-  useEvent(getCore, 'pointerStart', onPointerStart);
-  useEvent(getCore, 'pointerMove', onPointerMove);
-  useEvent(getCore, 'pointerEnd', onPointerEnd);
-  useEvent(getCore, 'pointerCancel', onPointerCancel);
-  useEvent(getCore, 'gestureStart', onGestureStart);
-  useEvent(getCore, 'gestureMove', onGestureMove);
-  useEvent(getCore, 'gestureEnd', onGestureEnd);
+  useEvent(core, 'pan', onPan);
+  useEvent(core, 'tap', onTap);
+  useEvent(core, 'swipe', onSwipe);
+  useEvent(core, 'singleTap', onSingleTap);
+  useEvent(core, 'longTap', onLongTap);
+  useEvent(core, 'doubleTap', onDoubleTap);
+  useEvent(core, 'multiPan', onMultiPan);
+  useEvent(core, 'scale', onScale);
+  useEvent(core, 'rotate', onRotate);
+  useEvent(core, 'pointerStart', onPointerStart);
+  useEvent(core, 'pointerMove', onPointerMove);
+  useEvent(core, 'pointerEnd', onPointerEnd);
+  useEvent(core, 'pointerCancel', onPointerCancel);
+  useEvent(core, 'gestureStart', onGestureStart);
+  useEvent(core, 'gestureMove', onGestureMove);
+  useEvent(core, 'gestureEnd', onGestureEnd);
 }

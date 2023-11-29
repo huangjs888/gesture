@@ -2,7 +2,7 @@
  * @Author: Huangjs
  * @Date: 2023-08-22 16:15:47
  * @LastEditors: Huangjs
- * @LastEditTime: 2023-10-20 13:15:37
+ * @LastEditTime: 2023-10-27 10:31:32
  * @Description: ******
  */
 
@@ -15,8 +15,8 @@ import { started, moved, ended, canceled, downed, wheeled } from '../events';
 import { isTouchable } from '../utils';
 
 export type IGestureRef = {
-  findDOMElement: () => Element | null | undefined;
-  getInstance: () => Core | null | undefined;
+  findDOMElement: () => Element | undefined;
+  getInstance: () => Core;
 };
 
 export type IHandler = ((e: IGestureEvent) => void) | null;
@@ -48,37 +48,29 @@ export type IGestureProps = {
 
 const Gesture = React.forwardRef<IGestureRef, IGestureProps>(
   ({ children, options, preventAllTap, ...events }, ref) => {
-    const elementRef = React.useRef<Element | null>(null);
-    const coreRef = React.useRef<Core | null>(null);
-
-    useIsomorphicLayoutEffect(() => {
+    const elementRef = React.useRef<Element>();
+    const coreRef = React.useRef<Core>();
+    if (!coreRef.current) {
       coreRef.current = new Core();
-    }, []);
-
+    }
+    const core = coreRef.current;
     useIsomorphicLayoutEffect(() => {
-      if (coreRef.current) {
-        coreRef.current.resetOptions(options);
-      }
+      core.resetOptions(options);
     }, [options]);
 
     useIsomorphicLayoutEffect(() => {
-      if (preventAllTap && coreRef.current) {
-        coreRef.current.preventAllTap();
-      }
+      preventAllTap && core.resetOptions(options);
     }, [preventAllTap]);
 
-    useEvents(
-      events,
-      React.useCallback(() => coreRef.current, []),
-    );
+    useEvents(events, core);
 
     React.useImperativeHandle(
       ref,
       (): IGestureRef => ({
         findDOMElement: () => elementRef.current,
-        getInstance: () => coreRef.current,
+        getInstance: () => core,
       }),
-      [],
+      [core],
     );
 
     // 这里ref函数使用useCallback，为了使每次渲染ref函数为同一个函数
@@ -96,31 +88,25 @@ const Gesture = React.forwardRef<IGestureRef, IGestureProps>(
         element = ReactDOM.findDOMNode(_ref);
       }
       if (!(element instanceof Element)) {
-        element = null;
+        element = undefined;
       }
       elementRef.current = element;
     }, []);
 
-    const bind = (emitter: (args: any) => void, args: any) => {
-      const core = coreRef.current;
-      if (core) {
-        emitter.apply(core, args);
-      }
-    };
     const listener = React.useMemo(
       () => ({
         ...(isTouchable()
           ? {
-              onTouchStart: (...args: any) => bind(started, args),
-              onTouchMove: (...args: any) => bind(moved, args),
-              onTouchEnd: (...args: any) => bind(ended, args),
-              onTouchCancel: (...args: any) => bind(canceled, args),
+              onTouchStart: started.bind(core),
+              onTouchMove: moved.bind(core),
+              onTouchEnd: ended.bind(core),
+              onTouchCancel: canceled.bind(core),
             }
           : {}),
-        onMouseDown: (...args: any) => bind(downed, args),
-        onWheel: (...args: any) => bind(wheeled, args),
+        onMouseDown: downed.bind(core),
+        onWheel: wheeled.bind(core),
       }),
-      [],
+      [core],
     );
 
     if (!children) {

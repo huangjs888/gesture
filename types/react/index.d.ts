@@ -1,8 +1,8 @@
 import React from 'react';
 import Core, { type IGestureOptions, type IGestureEvent } from '../core';
 export type IGestureRef = {
-    findDOMElement: () => Element | null | undefined;
-    getInstance: () => Core | null | undefined;
+    findDOMElement: () => Element | undefined;
+    getInstance: () => Core;
 };
 export type IHandler = ((e: IGestureEvent) => void) | null;
 export type IGestureHandler = {
